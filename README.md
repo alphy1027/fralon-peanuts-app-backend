@@ -40,8 +40,8 @@ src/
 ├── config/          # DB connection and app config
 ├── controllers/     # Route logic
 ├── models/          # MongoDB schemas
-├── services/          # MongoDB schemas
-├── views/          # MongoDB schemas
+├── services/          # api Business logic
+├── views/          # Email screens
 ├── routes/          # Express route definitions
 ├── middlewares/     # Auth & error handling
 ├── utils/           # Helper functions
@@ -50,14 +50,14 @@ src/
 🏁 Getting Started
 
 1. Clone the repo
-git clone https://github.com/your-username/fralon-peanuts-backend.git
+git clone https://github.com/alphy1027/fralon-peanuts-app-backend.git
 cd fralon-peanuts-backend
 
 2. Install dependencies
 npm install
 
 3. Create a .env file
-PORT=5000
+PORT=port
 MONGODB_URI=your_mongo_connection_string
 JWT_SECRET=your_jwt_secret
 
