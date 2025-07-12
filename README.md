@@ -1,11 +1,26 @@
 
 ---
 
-## 🧠 Fralon Peanuts – Backend
-
-# 🧠 Fralon Peanuts – Backend API
+# 🧠 Fralon Peanuts – Backend
 
 This is the backend API for **Fralon Peanuts**, an eCommerce platform for selling peanut-based products. It handles user authentication, product and order management, and serves both the customer-facing and admin-facing applications.
+
+---
+
+## 🛠 Tech Stack
+
+- **Node.js**
+- **Express.js**
+- **MongoDB** with **Mongoose**
+- **JWT** for authentication
+- **bcrypt** for password hashing
+- **cloudinary** for cloud image storage 
+- **nodemailer** for sending emails 
+- **ejs** for email templating 
+- **multer** for file uploading
+- **multer** for data validation
+- **dotenv** for config management
+- **CORS**, **Helmet** for security
 
 ---
 
@@ -18,18 +33,6 @@ This is the backend API for **Fralon Peanuts**, an eCommerce platform for sellin
 - 🛒 Cart functionality
 - 📦 Order creation and tracking
 - ⚙️ Middleware for route protection and error handling
-
----
-
-## 🛠 Tech Stack
-
-- **Node.js**
-- **Express.js**
-- **MongoDB** with **Mongoose**
-- **JWT** for authentication
-- **bcrypt** for password hashing
-- **dotenv** for config management
-- **CORS**, **Helmet** for security
 
 ---
 
