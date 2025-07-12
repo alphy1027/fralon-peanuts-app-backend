@@ -16,7 +16,7 @@ This is the backend API for **Fralon Peanuts**, an eCommerce platform for sellin
 - **bcrypt** for password hashing
 - **cloudinary** for cloud image storage 
 - **nodemailer** for sending emails 
-- **ejs** for email templating 
+- **handlebars** for email templating 
 - **multer** for file uploading
 - **multer** for data validation
 - **dotenv** for config management
