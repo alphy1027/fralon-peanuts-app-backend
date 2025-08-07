@@ -1,52 +1,64 @@
-const Client = require('../models/client');
-const ErrorResponse = require('../middleware/errorResponse');
+const Client = require("../models/client");
+const ErrorResponse = require("../middleware/errorResponse");
 
 class ClientService {
-    constructor(clientModel) {
-        this.Client = clientModel;
-    }
+  constructor(clientModel) {
+    this.Client = clientModel;
+  }
 
-    async createNewClient(clientDetails) {
-        return await this.Client.create({ ...clientDetails });
-    }
+  async createNewClient(clientDetails) {
+    return await this.Client.create({ ...clientDetails });
+  }
 
-    async getClient(clientDetails) {
-        return await this.Client.findOne({ ...clientDetails }).exec();
-    }
+  async getClient(clientDetails) {
+    return await this.Client.findOne({ ...clientDetails }).exec();
+  }
 
-    async getAllClients(query) {
-        const limit = parseInt(query.limit) || 5
-        return await this.Client.aggregate([
-            { $match: {} },
-            { $sort: { createdAt: -1 } },
-            { $limit: limit }
-        ])
-    }
+  async getClientOrders(clientId) {
+    return await this.Client.findById(clientId)
+      .select("orders")
+      .populate({
+        path: "orders",
+        populate: {
+          path: "items.product",
+          model: "Product",
+          select: "productName packageSize",
+        },
+      });
+  }
 
-    async getClientById(clientId) {
-        return await this.Client.findById(clientId).select('username email phoneNumber orders transactions membership flagged createdAt').exec();
-    }
+  async getAllClients(query) {
+    const limit = parseInt(query.limit) || 5;
+    return await this.Client.aggregate([{ $match: {} }, { $sort: { createdAt: -1 } }, { $limit: limit }]);
+  }
 
-    async deleteClient(clientId) {
-        return await this.Client.findByIdAndDelete(clientId).exec();
-    }
+  async getClientById(clientId) {
+    return await this.Client.findById(clientId)
+      .select("username email phoneNumber orders transactions membership flagged createdAt")
+      .exec();
+  }
 
-    async updateClient(clientId, clientDetails) {
-        return await this.Client.findByIdAndUpdate(clientId,
-            { $set: clientDetails },
-            { new: true, runValidators: true }
-        ).exec()
-    }
+  async deleteClient(clientId) {
+    return await this.Client.findByIdAndDelete(clientId).exec();
+  }
 
-    async flagClient(clientId) {
-        const flaggedClient = await this.Client.findById(clientId).select('username email phoneNumber membership flagged createdAt').exec();
-        if (!flaggedClient)
-            return null;
-        flaggedClient.flagged = !flaggedClient.flagged;
-        await flaggedClient.save();
-        return flaggedClient;
-    }
+  async updateClient(clientId, clientDetails) {
+    return await this.Client.findByIdAndUpdate(
+      clientId,
+      { $set: clientDetails },
+      { new: true, runValidators: true }
+    ).exec();
+  }
 
+  async flagClient(clientId) {
+    const flaggedClient = await this.Client.findById(clientId)
+      .select("username email phoneNumber membership flagged createdAt")
+      .exec();
+    if (!flaggedClient) return null;
+    flaggedClient.flagged = !flaggedClient.flagged;
+    await flaggedClient.save();
+    return flaggedClient;
+  }
 }
 
 module.exports = new ClientService(Client);

@@ -20,7 +20,7 @@ const addToCart_post = asyncHandler(async (req, res, next) => {
   validateId(clientId, next);
   const cart = await cartService.addItemToCart(clientId, productId);
   if (!cart) return next(new ErrorResponse("Failed to add item to cart"));
-  return successResponse(res, "Item added to cart successfully", { updatedCart: cart });
+  return successResponse(res, "Item added to cart successfully", { updatedCart: cart }, 201);
 });
 // remove item from cart
 const removeFromCart_delete = asyncHandler(async (req, res, next) => {

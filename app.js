@@ -2,7 +2,6 @@ require("dotenv").config();
 const helmet = require("helmet");
 const morgan = require("morgan");
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const clientRoutes = require("./routes/clientRoutes");
@@ -20,6 +19,8 @@ const errorHandler = require("./middleware/errorHandler");
 const cookieParser = require("cookie-parser");
 const { checkAuth } = require("./middleware/authMiddleware");
 const { USER_ROLES, verifyRoles } = require("./middleware/roles");
+const connectDB = require("./config/db");
+const startServer = require("./config/server");
 
 const limiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
@@ -40,29 +41,6 @@ app.use(
     credentials: true, // Allow credentials (cookies) to be included
   })
 );
-
-const connectDB = async () => {
-  const PORT = process.env.PORT || 3000;
-  try {
-    await mongoose
-      .connect(
-        process.env.MONGO_URI /*  {
-            useUnifiedTopology: true,
-            useNewUrlParser: true
-        } */
-      )
-      .then((result) => {
-        app.listen(PORT, () => {
-          console.log(`listening to requests on port:${PORT}`);
-        });
-        console.log("connected to local mongoDB successfully");
-      })
-      .catch((err) => console.log("Failed to connect to the database", err));
-  } catch (error) {
-    console.log("Connection Error : ", error);
-  }
-};
-connectDB();
 
 app.use(morgan("dev")); // log every request to the console
 app.use(express.json());
@@ -90,3 +68,10 @@ app.use("*", (req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 app.use(errorHandler);
+
+// Connect to DB and start server
+const startApp = async () => {
+  await connectDB();
+  startServer(app);
+};
+startApp();

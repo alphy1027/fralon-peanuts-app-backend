@@ -38,6 +38,7 @@ class cartService {
     const cart = await this.getCartByClient(clientId);
     if (!cart) return null;
     console.log("cart ::", cart);
+    if (!cart.items.length) console.log("cart items was empty");
     const existingCartItem = cart.items.find((item) => item.product._id.toString() === productId.toString());
     if (existingCartItem) {
       console.log("existing cart item ::", existingCartItem);
@@ -46,6 +47,7 @@ class cartService {
       cart.items.push({ product: productId });
     }
     await cart.save();
+    await cart.populate("items.product");
     return cart;
   }
 

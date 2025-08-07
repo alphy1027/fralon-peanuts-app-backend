@@ -9,6 +9,7 @@ const Client = require("../models/client");
 const clientService = require("./clientService");
 const crypto = require("crypto");
 const ErrorResponse = require("../middleware/errorResponse");
+const { manageRefreshTokens } = require("../utils/manageRefreshTokens");
 
 class AuthService {
   async registerUser(clientDetails) {
@@ -27,15 +28,14 @@ class AuthService {
     // login in user using a custom login static method on client schema
     const user = await Client.login(email, password);
     if (!user.isVerified) throw new ErrorResponse("Please verify your email before logging in", 403);
+    user.refreshToken = user.refreshToken.filter((token) => token !== oldToken);
     console.log(user);
-    oldToken ? (user.refreshToken = user.refreshToken.filter((token) => token !== oldToken)) : user.refreshToken;
-
     const accessToken = createAccessToken(user);
     const refreshToken = createRefreshToken(user._id);
-
-    user.refreshToken.push(refreshToken);
-    await user.save();
-    return { user, accessToken, refreshToken };
+    const userWithToken = manageRefreshTokens(user, refreshToken);
+    console.log("LATEST TOKENS ::", userWithToken.refreshToken);
+    await userWithToken.save();
+    return { user: userWithToken, accessToken, refreshToken };
   }
 
   async logoutUser(refreshToken) {

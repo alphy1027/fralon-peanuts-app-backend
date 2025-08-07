@@ -1,67 +1,77 @@
-const mongoose = require('mongoose');
-const ErrorResponse = require('../middleware/errorResponse');
-const purchaseService = require('../services/purchaseService');
+const mongoose = require("mongoose");
+const ErrorResponse = require("../middleware/errorResponse");
+const purchaseService = require("../services/purchaseService");
 const Schema = mongoose.Schema;
 
-const orderSchema = new Schema({
+const orderSchema = new Schema(
+  {
     client: {
-        type: Schema.Types.ObjectId,
-        ref: 'Client',
-        required: true
+      type: Schema.Types.ObjectId,
+      ref: "Client",
+      required: true,
     },
-    items: [{
-        product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-        quantity: { type: Number, required: true }
-    }],
+    items: [
+      {
+        product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true },
+        subTotal: { type: Number, required: true },
+        priceType: { type: String, enum: ["retail", "wholesale"], default: "retail" },
+      },
+    ],
+    address: {
+      county: { type: String, default: "Nairobi" },
+      subCounty: { type: String, required: true },
+      ward: { type: String, required: true },
+      area: { type: String, required: true },
+      additionalDetails: String,
+    },
     totalPrice: {
-        type: Number,
-        required: true
+      type: Number,
+      required: true,
     },
     status: {
-        type: String,
-        enum: ['pending', 'completed', 'shipped', 'delivered', 'cancelled'],
-        default: 'pending'
+      type: String,
+      enum: ["pending", "processing", "completed", "shipped", "delivered", "cancelled"],
+      default: "pending",
     },
     paymentMethod: {
-        type: String,
-        required: true,
-        enum: ['cash', 'mpesa', 'bank', 'paypal']
+      type: String,
+      required: true,
+      enum: ["cash", "mpesa", "bank", "paypal"],
     },
-    orderType: {
-        type: String,
-        enum: ['wholesale', 'retail']
-    },
-    paid: {
-        type: Boolean,
-        required: true
+    paymentStatus: {
+      type: String,
+      enum: ["unpaid", "paid", "failed"],
+      default: "unpaid",
     },
     transaction: {
-        type: Schema.Types.ObjectId,
-        ref: 'Transaction',
-        required: function () {
-            return this.paymentMethod === 'mpesa'
-        }
+      type: Schema.Types.ObjectId,
+      ref: "Transaction",
+      required: function () {
+        return this.paymentMethod === "mpesa";
+      },
     },
-    notes: String
-}, { timestamps: true });
+    notes: String,
+  },
+  { timestamps: true }
+);
 
-orderSchema.post('findOneAndUpdate', async function (doc) {
-    if (!doc)
-        return new ErrorResponse('No document found to add as new purchase', 404);
-    try {
-        if (doc.status === 'completed') {
-            await purchaseService.createNewPurchase({
-                order: doc._id,
-                totalPrice: doc.totalPrice,
-                paymentMethod: doc.paymentMethod
-            })
-            console.log('New puchase created after completed order')
-        }
-    } catch (err) {
-        new ErrorResponse(err.message)
+orderSchema.post("findOneAndUpdate", async function (doc) {
+  if (!doc) return new ErrorResponse("No document found to add as new purchase", 404);
+  try {
+    if (doc.status === "completed") {
+      await purchaseService.createNewPurchase({
+        order: doc._id,
+        totalPrice: doc.totalPrice,
+        paymentMethod: doc.paymentMethod,
+      });
+      console.log("New puchase created after completed order");
     }
-})
+  } catch (err) {
+    new ErrorResponse(err.message);
+  }
+});
 
-
-const Order = mongoose.model('Order', orderSchema);
+const Order = mongoose.model("Order", orderSchema);
 module.exports = Order;
