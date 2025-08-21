@@ -9,6 +9,7 @@ const purchaseRoutes = require("./routes/purchaseRoutes");
 const authRoutes = require("./routes/authRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const productRoutes = require("./routes/productRoutes");
+const publicProductRoutes = require("./routes/publicProductRoutes");
 const profileRoutes = require("./routes/profileRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const favouriteRoutes = require("./routes/favouriteRoutes");
@@ -53,6 +54,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use("/auth", authRoutes);
+app.use("/products", publicProductRoutes);
 app.use(checkAuth);
 app.use("/cart", verifyRoles(USER_ROLES.CLIENT), cartRoutes);
 app.use("/products", productRoutes);
