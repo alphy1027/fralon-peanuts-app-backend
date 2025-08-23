@@ -21,7 +21,7 @@ class OrderService {
           _id: {
             $in: productIds,
           },
-        });
+        }).session(session);
         const orderItems = orderDetails.items.map((item) => {
           const product = products.find((prod) => prod?._id?.toString() === item?.product?.toString());
           let productPrice;
@@ -70,6 +70,7 @@ class OrderService {
             {
               client: orderDetails.clientId,
               items: orderItems,
+              deliveryMethod: orderDetails.deliveryMethod,
               address: orderDetails.address,
               totalPrice: grandTotal,
               paymentMethod: orderDetails.paymentMethod,

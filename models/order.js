@@ -19,12 +19,40 @@ const orderSchema = new Schema(
         priceType: { type: String, enum: ["retail", "wholesale"], default: "retail" },
       },
     ],
+    deliveryMethod: {
+      type: String,
+      enum: ["delivery", "pickup"],
+      required: true,
+    },
     address: {
-      county: { type: String, default: "Nairobi" },
-      subCounty: { type: String, required: true },
-      ward: { type: String, required: true },
-      area: { type: String, required: true },
-      additionalDetails: String,
+      county: {
+        type: String,
+        default: "Nairobi",
+      },
+      subCounty: {
+        type: String,
+        required: function () {
+          return this.deliveryMethod === "delivery";
+        },
+      },
+      ward: {
+        type: String,
+        required: function () {
+          return this.deliveryMethod === "delivery";
+        },
+      },
+      area: {
+        type: String,
+        required: function () {
+          return this.deliveryMethod === "delivery";
+        },
+      },
+      additionalDetails: {
+        type: String,
+        required: function () {
+          return this.deliveryMethod === "delivery";
+        },
+      },
     },
     totalPrice: {
       type: Number,
