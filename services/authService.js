@@ -18,7 +18,7 @@ class AuthService {
     const newUser = await clientService.createNewClient({
       ...clientDetails,
       verificationToken: hashedVerificationToken,
-      verificationTokenExpiry: Date.now() + 60 * 60 * 1000, // 1 hour
+      verificationTokenExpiry: Date.now() + 60 * 30 * 1000, // 1/2 hour
     });
     const emailResponse = await sendVerificationEmail(newUser.email, verificationToken, newUser.username);
     return { emailResponse, newUser };
@@ -33,7 +33,6 @@ class AuthService {
     const accessToken = createAccessToken(user);
     const refreshToken = createRefreshToken(user._id);
     const userWithToken = manageRefreshTokens(user, refreshToken);
-    console.log("LATEST TOKENS ::", userWithToken.refreshToken);
     await userWithToken.save();
     return { user: userWithToken, accessToken, refreshToken };
   }
@@ -59,6 +58,7 @@ class AuthService {
       verificationTokenExpiry: { $gt: Date.now() },
     });
     if (!userWithValidToken) throw new ErrorResponse("Invalid or Expired verification link", 400);
+    if (userWithValidToken.isVerified) throw new ErrorResponse("User is already verified", 409);
 
     userWithValidToken.isVerified = true;
     userWithValidToken.verificationToken = undefined;
@@ -85,6 +85,7 @@ class AuthService {
   }
 
   async resendEmailVerification(email) {
+    const THROTTLE_MS = 60 * 1000;
     const user = await clientService.getClient({ email });
     if (!user) {
       throw new ErrorResponse("Email does not match any current user", 404);
@@ -92,10 +93,14 @@ class AuthService {
     if (user.isVerified) {
       throw new ErrorResponse("Email is already verified", 400);
     }
+
+    if (user.verificationTokenExpiry - Date.now() > 60 * 30 * 1000 - THROTTLE_MS) {
+      throw new ErrorResponse("Please wait at least 1 minute before requesting another verification email", 400);
+    }
     const { token: emailVerificationToken, hashedToken: hashedEmailVerificationToken } = generateCryptoToken();
 
     user.verificationToken = hashedEmailVerificationToken;
-    user.verificationTokenExpiry = Date.now() + 60 * 60 * 1000; // 1 hour
+    user.verificationTokenExpiry = Date.now() + 60 * 30 * 1000; // 1/2 hour
     await user.save();
     return await sendVerificationEmail(user.email, emailVerificationToken, user.username);
   }

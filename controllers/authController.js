@@ -1,15 +1,18 @@
 const asyncHandler = require("../middleware/asyncHandler");
 const ErrorResponse = require("../middleware/errorResponse");
 const successResponse = require("../middleware/successResponse");
+const signupRequestSchema = require("../schemas/signupSchema");
 const authService = require("../services/authService");
 
 // creating new user
 const createNewUser_post = asyncHandler(async (req, res, next) => {
-  const { username, email, phoneNumber, password, confirmPassword } = req.body;
-  if (!username || !email || !phoneNumber || !password || !confirmPassword) {
-    return next(new ErrorResponse("All fields are required", 400));
+  const result = signupRequestSchema.safeParse(req.body);
+  console.log(req.body);
+  if (!result.success) {
+    return next(new ErrorResponse(`Validation Error :: ${result.error.issues[0].message}`, 400));
   }
-  const { emailResponse, newUser } = await authService.registerUser(req.body);
+  const validatedNewUser = result.data;
+  const { emailResponse, newUser } = await authService.registerUser(validatedNewUser);
   return successResponse(res, emailResponse.message, { newUser }, emailResponse.status);
 });
 // logging in user

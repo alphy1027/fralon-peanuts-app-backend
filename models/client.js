@@ -21,11 +21,15 @@ const clientSchema = new Schema(
     },
     phoneNumber: {
       type: String,
-      unique: true,
-      required: true,
+      //unique: true,
+      // sparse: true, // only enforce uniqueness on docs where phoneNumber exists
     },
     address: {
-      type: String,
+      county: String,
+      subCounty: String,
+      ward: String,
+      area: String,
+      additionalDetails: String,
     },
     password: {
       type: String,
@@ -50,12 +54,7 @@ const clientSchema = new Schema(
       default: [],
     },
     favouriteProducts: {
-      type: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "Product",
-        },
-      ],
+      type: [{ type: Schema.Types.ObjectId, ref: "Product" }],
       default: [],
     },
     role: {
