@@ -127,9 +127,7 @@ clientSchema.post("save", async function (doc) {
 });
 
 clientSchema.statics.login = async function (email, password) {
-  if (email === "" && password === "") throw new ErrorResponse("Fields are empty", 400);
-  if (email === "") throw new ErrorResponse("Please enter your email", 400);
-  if (password === "") throw new ErrorResponse("Please enter your password", 400);
+  if (email === "" || password === "") throw new ErrorResponse("All fields are required", 400);
 
   const user = await this.findOne({ email });
   if (user) {
@@ -137,9 +135,9 @@ clientSchema.statics.login = async function (email, password) {
     if (matchedUser) {
       return user;
     }
-    throw new ErrorResponse("Password is incorrect", 400);
+    throw new ErrorResponse("Your email or password is invalid", 400);
   }
-  throw new ErrorResponse("Email is incorrect", 400);
+  throw new ErrorResponse("Your email or password is invalid", 400);
 };
 
 const Client = mongoose.model("Client", clientSchema);
