@@ -116,14 +116,17 @@ class AuthService {
     if (!user) throw new ErrorResponse("Invalid or Expired reset password link", 404);
 
     user.password = password;
-    user.confirmPassword = confirmPassword;
+    // user.confirmPassword = confirmPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordTokenExpiry = undefined;
     return await user.save();
   }
 
   async sendResetPasswordEmail(email) {
     const user = await clientService.getClient({ email });
+    console.log("USER ::", user);
     if (!user) {
-      throw new ErrorResponse("Email does not match any current user", 404);
+      throw new ErrorResponse("Invalid user Email", 404);
     }
     const { token: resetToken, hashedToken: hashedResetToken } = generateCryptoToken();
 

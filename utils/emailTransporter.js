@@ -84,7 +84,7 @@ const sendWelcomeEmail = (email, username) => {
 };
 
 const sendForgotPasswordEmail = (email, token, username) => {
-  const resetPasswordUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+  const resetPasswordUrl = `${process.env.FRONTEND_URL}/auth/reset-password/${token}`;
   console.log(resetPasswordUrl);
   const mailOptions = {
     from: process.env.EMAIL_USER,
