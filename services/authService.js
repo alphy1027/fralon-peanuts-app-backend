@@ -116,7 +116,7 @@ class AuthService {
     if (!user) throw new ErrorResponse("Invalid or Expired reset password link", 404);
 
     user.password = password;
-    // user.confirmPassword = confirmPassword;
+    user.confirmPassword = confirmPassword;
     user.resetPasswordToken = undefined;
     user.resetPasswordTokenExpiry = undefined;
     return await user.save();
