@@ -86,7 +86,7 @@ const clientSchema = new Schema(
   { timestamps: true }
 );
 
-clientSchema.pre("save", function (next) {
+/* clientSchema.pre("save", function (next) {
   if (!this.isModified("password")) {
     return next();
   }
@@ -96,7 +96,7 @@ clientSchema.pre("save", function (next) {
   } else {
     return next(new ErrorResponse("Passwords do not match", 400));
   }
-});
+}); */
 
 clientSchema.pre("save", async function (next) {
   try {
