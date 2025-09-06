@@ -9,11 +9,11 @@ const itemSchema = z.object({
 });
 
 const addressSchema = z.object({
-  county: z.string(),
+  county: z.string().optional(),
   subCounty: z.string(),
   ward: z.string(),
   area: z.string(),
-  additionalDetails: z.string(),
+  additionalDetails: z.string().optional(),
 });
 
 // Main Schema
@@ -29,11 +29,8 @@ const orderRequestSchema = z
     (data) => {
       if (data.deliveryMethod === "delivery") {
         return !!(
-          data.address &&
-          data.address.subCounty &&
-          data.address.ward &&
-          data.address.area &&
-          data.address.additionalDetails
+          (data.address && data.address.subCounty && data.address.ward && data.address.area)
+          /*   && data.address.additionalDetails */
         );
       }
       return true;

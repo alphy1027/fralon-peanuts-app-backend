@@ -47,12 +47,7 @@ const orderSchema = new Schema(
           return this.deliveryMethod === "delivery";
         },
       },
-      additionalDetails: {
-        type: String,
-        required: function () {
-          return this.deliveryMethod === "delivery";
-        },
-      },
+      additionalDetails: String,
     },
     totalPrice: {
       type: Number,
