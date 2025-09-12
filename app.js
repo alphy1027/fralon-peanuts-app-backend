@@ -62,7 +62,7 @@ app.use("/clients", verifyRoles(USER_ROLES.ADMIN), clientRoutes);
 app.use("/purchases", verifyRoles(USER_ROLES.ADMIN), purchaseRoutes);
 app.use("/orders", orderRoutes);
 app.use("/notifications", verifyRoles(USER_ROLES.ADMIN), notificationRoutes);
-app.use("/favourites", favouriteRoutes);
+app.use("/favorites", verifyRoles(USER_ROLES.CLIENT), favouriteRoutes);
 app.use("/transactions", transactionRoutes);
 app.use("/contact-us", verifyRoles(USER_ROLES.CLIENT), contactRoutes);
 app.use("/profile", verifyRoles(USER_ROLES.CLIENT, USER_ROLES.ADMIN), profileRoutes);
